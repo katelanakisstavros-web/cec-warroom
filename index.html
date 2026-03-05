@@ -1,0 +1,1255 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CEC Warroom V1 — Executive Cockpit</title>
+
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --bg2:#0e141c;
+      --card:#111827;
+      --card2:#0f172a;
+      --stroke:#1f2a3a;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --gold:#d6b15e;
+      --gold2:#b8923b;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --cyan:#22d3ee;
+      --shadow: 0 18px 55px rgba(0,0,0,.45);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:
+        radial-gradient(1000px 500px at 15% 10%, rgba(214,177,94,.10), transparent 60%),
+        radial-gradient(900px 600px at 85% 25%, rgba(34,211,238,.08), transparent 55%),
+        radial-gradient(900px 700px at 55% 95%, rgba(185,146,59,.07), transparent 60%),
+        var(--bg);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      letter-spacing:.2px;
+      overflow-x:hidden;
+    }
+
+    /* Layout */
+    .app{
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      min-height:100vh;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(255,255,255,.06);
+      background: linear-gradient(180deg, rgba(17,24,39,.70), rgba(11,15,20,.40));
+      padding:18px 16px;
+      position:sticky;
+      top:0;
+      height:100vh;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 12px;
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:14px;
+      background: rgba(15,23,42,.55);
+      box-shadow: var(--shadow);
+    }
+    .logo{
+      width:44px;height:44px;
+      border-radius:12px;
+      background:
+        linear-gradient(135deg, rgba(214,177,94,.95), rgba(214,177,94,.35)),
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.22), transparent 55%);
+      border:1px solid rgba(214,177,94,.35);
+      display:grid;
+      place-items:center;
+      color:#0b0f14;
+      font-weight:800;
+    }
+    .brand h1{
+      margin:0;
+      font-size:14px;
+      font-weight:800;
+      line-height:1.15;
+    }
+    .brand p{
+      margin:2px 0 0 0;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .nav{
+      margin-top:16px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .nav .item{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(15,23,42,.35);
+      color:var(--text);
+      cursor:pointer;
+      user-select:none;
+      transition: .15s ease;
+    }
+    .nav .item:hover{
+      transform: translateY(-1px);
+      border-color: rgba(214,177,94,.25);
+      background: rgba(17,24,39,.55);
+    }
+    .nav .item.active{
+      border-color: rgba(214,177,94,.45);
+      box-shadow: 0 10px 30px rgba(214,177,94,.08);
+    }
+    .pill{
+      margin-left:auto;
+      font-size:11px;
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,.08);
+      padding:2px 8px;
+      border-radius:999px;
+      background: rgba(11,15,20,.35);
+    }
+
+    .sideblock{
+      margin-top:14px;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(15,23,42,.35);
+    }
+    .sideblock h3{
+      margin:0 0 8px 0;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      letter-spacing:.35px;
+    }
+    .btn{
+      width:100%;
+      display:inline-flex;
+      justify-content:center;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(214,177,94,.35);
+      background: linear-gradient(180deg, rgba(214,177,94,.90), rgba(185,146,59,.85));
+      color:#0b0f14;
+      font-weight:800;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn.secondary{
+      margin-top:8px;
+      border-color: rgba(255,255,255,.10);
+      background: rgba(17,24,39,.55);
+      color: var(--text);
+      font-weight:700;
+    }
+
+    /* Main */
+    .main{
+      padding:18px 18px 26px 18px;
+    }
+
+    /* Topbar */
+    .topbar{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 16px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.07);
+      background: rgba(15,23,42,.55);
+      box-shadow: var(--shadow);
+    }
+    .top-left{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .title{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .top-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .chip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(11,15,20,.35);
+      font-size:12px;
+      color:var(--muted);
+    }
+    .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: var(--warn);
+      box-shadow: 0 0 0 4px rgba(245,158,11,.12);
+    }
+    .dot.good{ background: var(--good); box-shadow: 0 0 0 4px rgba(34,197,94,.12); }
+    .dot.bad{ background: var(--bad); box-shadow: 0 0 0 4px rgba(239,68,68,.12); }
+
+    /* KPI */
+    .kpis{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:12px;
+    }
+    .kpi{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(17,24,39,.55);
+      box-shadow: 0 14px 40px rgba(0,0,0,.30);
+      position:relative;
+      overflow:hidden;
+    }
+    .kpi:before{
+      content:"";
+      position:absolute;
+      inset:-60px -80px auto auto;
+      width:180px;height:180px;
+      background: radial-gradient(circle at 30% 30%, rgba(214,177,94,.22), transparent 60%);
+      transform: rotate(18deg);
+    }
+    .kpi .label{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+    }
+    .kpi .value{
+      margin-top:8px;
+      font-size:26px;
+      font-weight:900;
+      color:var(--text);
+    }
+    .kpi .trend{
+      margin-top:6px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .spark{
+      width:10px;height:10px;border-radius:3px;
+      background: rgba(214,177,94,.75);
+    }
+
+    /* Panels grid */
+    .grid{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap:12px;
+      align-items:start;
+    }
+    .panel{
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(15,23,42,.45);
+      box-shadow: 0 14px 45px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+    .panel-header{
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      background: rgba(17,24,39,.55);
+    }
+    .panel-header h2{
+      margin:0;
+      font-size:13px;
+      letter-spacing:.35px;
+      color:var(--muted);
+      font-weight:800;
+    }
+    .panel-body{
+      padding:14px;
+    }
+
+    .cmd-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .cmd{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(11,15,20,.35);
+      cursor:pointer;
+      transition:.15s ease;
+      user-select:none;
+      font-weight:800;
+      font-size:12px;
+      color:var(--text);
+    }
+    .cmd:hover{
+      transform: translateY(-1px);
+      border-color: rgba(214,177,94,.25);
+      background: rgba(17,24,39,.55);
+    }
+    .cmd.primary{
+      border-color: rgba(214,177,94,.35);
+      background: linear-gradient(180deg, rgba(214,177,94,.90), rgba(185,146,59,.85));
+      color:#0b0f14;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(11,15,20,.30);
+    }
+    .row strong{font-size:12px}
+    .row span{font-size:12px;color:var(--muted)}
+    .badge{
+      margin-left:auto;
+      font-size:11px;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--muted);
+      background: rgba(15,23,42,.35);
+    }
+    .badge.good{ border-color: rgba(34,197,94,.25); color: rgba(34,197,94,.95); }
+    .badge.warn{ border-color: rgba(245,158,11,.25); color: rgba(245,158,11,.95); }
+    .badge.bad{ border-color: rgba(239,68,68,.25); color: rgba(239,68,68,.95); }
+
+    /* Console */
+    .console{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      background: rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      height:220px;
+      overflow:auto;
+      color:#d1d5db;
+      font-size:12px;
+      line-height:1.55;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+    .line{ white-space:pre-wrap; }
+    .t{ color: rgba(214,177,94,.95); }
+    .m{ color: rgba(156,163,175,.95); }
+    .ok{ color: rgba(34,197,94,.95); }
+    .er{ color: rgba(239,68,68,.95); }
+    .cy{ color: rgba(34,211,238,.95); }
+
+    /* Responsive */
+    @media (max-width: 1100px){
+      .kpis{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid{ grid-template-columns: 1fr; }
+      .sidebar{ position:relative; height:auto; }
+      .app{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">CEC</div>
+        <div>
+          <h1>CEC Warroom</h1>
+          <p>Executive Cockpit • V1</p>
+        </div>
+      </div>
+
+      <div class="nav" style="margin-top:14px;">
+        <div class="item active" data-view="overview">Overview <span class="pill">LIVE</span></div>
+        <div class="item" data-view="intel">Intelligence <span class="pill">v1</span></div>
+        <div class="item" data-view="pipeline">Pipeline <span class="pill">β</span></div>
+        <div class="item" data-view="settings">Settings <span class="pill">lock</span></div>
+      </div>
+
+      <div class="sideblock">
+        <h3>QUICK ACTIONS</h3>
+        <button class="btn" id="btnDemo">Run Demo</button>
+        <button class="btn secondary" id="btnClear">Clear Console</button>
+      </div>
+
+      <div class="sideblock">
+        <h3>STATUS</h3>
+        <div class="row">
+          <strong>System</strong>
+          <span id="sysState">Standby</span>
+          <span class="badge warn" id="sysBadge">WAIT</span>
+        </div>
+        <div class="row">
+          <strong>Netlify</strong>
+          <span>Online</span>
+          <span class="badge good">OK</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <div class="top-left">
+          <div class="title">CEC Warroom V1 — Executive Cockpit</div>
+          <div class="subtitle">Internal Intelligence • Dark/Gold • Mobile-ready</div>
+        </div>
+        <div class="top-right">
+          <div class="chip"><span class="dot" id="dot"></span><span id="liveState">Standby</span></div>
+          <div class="chip">Time: <span id="timeNow">--:--:--</span></div>
+          <div class="chip">Mode: <span style="color:var(--gold)">Executive</span></div>
+        </div>
+      </div>
+
+      <section class="kpis">
+        <div class="kpi">
+          <div class="label">Leads (24h)</div>
+          <div class="value" id="kpiLeads">0</div>
+          <div class="trend"><span class="spark"></span><span id="kpiLeadsSub">No activity</span></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Deals (Active)</div>
+          <div class="value" id="kpiDeals">0</div>
+          <div class="trend"><span class="spark"></span><span id="kpiDealsSub">Awaiting input</span></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Pipeline (€)</div>
+          <div class="value" id="kpiPipe">0</div>
+          <div class="trend"><span class="spark"></span><span id="kpiPipeSub">Not loaded</span></div>
+        </div>
+        <div class="kpi">
+          <div class="label">Alerts</div>
+          <div class="value" id="kpiAlerts">0</div>
+          <div class="trend"><span class="spark"></span><span id="kpiAlertsSub">All quiet</span></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <!-- Command Center -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2>COMMAND CENTER</h2>
+            <span class="badge" id="viewTag">overview</span>
+          </div>
+          <div class="panel-body">
+            <div class="cmd-row">
+              <div class="cmd primary" id="cmdRun">Run Demo</div>
+              <div class="cmd" id="cmdSync">Sync Snapshot</div>
+              <div class="cmd" id="cmdScan">Scan Signals</div>
+              <div class="cmd" id="cmdLock">Lock Mode</div>
+            </div>
+
+            <div style="height:12px"></div>
+
+            <div class="two-col">
+              <div class="list">
+                <div class="row">
+                  <strong>Lead Engine</strong>
+                  <span id="stLead">Idle</span>
+                  <span class="badge warn" id="bdLead">WAIT</span>
+                </div>
+                <div class="row">
+                  <strong>Outreach</strong>
+                  <span id="stOutreach">Idle</span>
+                  <span class="badge warn" id="bdOutreach">WAIT</span>
+                </div>
+                <div class="row">
+                  <strong>Dedupe</strong>
+                  <span id="stDedupe">Idle</span>
+                  <span class="badge warn" id="bdDedupe">WAIT</span>
+                </div>
+              </div>
+
+              <div class="list">
+                <div class="row">
+                  <strong>Intel Layer</strong>
+                  <span id="stIntel">Standby</span>
+                  <span class="badge warn" id="bdIntel">WAIT</span>
+                </div>
+                <div class="row">
+                  <strong>Compliance</strong>
+                  <span id="stComp">Standby</span>
+                  <span class="badge good" id="bdComp">OK</span>
+                </div>
+                <div class="row">
+                  <strong>Logging</strong>
+                  <span id="stLog">Ready</span>
+                  <span class="badge good" id="bdLog">OK</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Intelligence -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2>INTELLIGENCE</h2>
+            <span class="badge">signals</span>
+          </div>
+          <div class="panel-body">
+            <div class="list" id="intelList">
+              <div class="row">
+                <strong>UAE / Saudi rollout</strong>
+                <span>Target lists pending</span>
+                <span class="badge warn">TBD</span>
+              </div>
+              <div class="row">
+                <strong>LinkedIn quality gate</strong>
+                <span>Enabled</span>
+                <span class="badge good">ON</span>
+              </div>
+              <div class="row">
+                <strong>Warroom layout</strong>
+                <span>Executive V1</span>
+                <span class="badge good">LIVE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2>ACTIVITY LOG</h2>
+            <span class="badge">events</span>
+          </div>
+          <div class="panel-body">
+            <div class="list" id="activity">
+              <div class="row">
+                <strong>Boot</strong>
+                <span>Executive Cockpit loaded</span>
+                <span class="badge good">OK</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Console -->
+        <div class="panel">
+          <div class="panel-header">
+            <h2>SYSTEM CONSOLE</h2>
+            <span class="badge">stdout</span>
+          </div>
+          <div class="panel-body">
+            <div class="console" id="console"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const state = {
+      view: "overview",
+      locked: false,
+      demoRan: false,
+      leads: 0,
+      deals: 0,
+      pipeline: 0,
+      alerts: 0
+    };
+
+    function ts(){
+      const d = new Date();
+      return d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+    }
+
+    function logLine(type, msg){
+      const el = document.createElement("div");
+      el.className = "line";
+      const t = ts();
+      const cls = type === "OK" ? "ok" : type === "ERR" ? "er" : type === "CY" ? "cy" : "m";
+      el.innerHTML = `<span class="t">[${t}]</span> <span class="${cls}">${type}</span>  ${msg}`;
+      $("console").appendChild(el);
+      $("console").scrollTop = $("console").scrollHeight;
+    }
+
+    function addActivity(title, detail, badgeText, badgeClass){
+      const row = document.createElement("div");
+      row.className = "row";
+      row.innerHTML = `<strong>${title}</strong><span>${detail}</span><span class="badge ${badgeClass||""}">${badgeText}</span>`;
+      const a = $("activity");
+      a.prepend(row);
+    }
+
+    function setBadge(id, text, cls){
+      const b = $(id);
+      b.className = "badge " + (cls || "");
+      b.textContent = text;
+    }
+
+    function setSystem(mode){
+      // mode: standby | running | locked
+      if(mode === "running"){
+        $("sysState").textContent = "Running";
+        setBadge("sysBadge", "RUN", "good");
+        $("dot").className = "dot good";
+        $("liveState").textContent = "Running";
+      } else if(mode === "locked"){
+        $("sysState").textContent = "Locked";
+        setBadge("sysBadge", "LOCK", "warn");
+        $("dot").className = "dot";
+        $("liveState").textContent = "Locked";
+      } else {
+        $("sysState").textContent = "Standby";
+        setBadge("sysBadge", "WAIT", "warn");
+        $("dot").className = "dot";
+        $("liveState").textContent = "Standby";
+      }
+    }
+
+    function updateKPIs(){
+      $("kpiLeads").textContent = state.leads;
+      $("kpiDeals").textContent = state.deals;
+      $("kpiPipe").textContent = state.pipeline.toLocaleString("nl-NL");
+      $("kpiAlerts").textContent = state.alerts;
+
+      $("kpiLeadsSub").textContent = state.leads ? "Incoming signals detected" : "No activity";
+      $("kpiDealsSub").textContent = state.deals ? "Active negotiation stage" : "Awaiting input";
+      $("kpiPipeSub").textContent = state.pipeline ? "Pipeline loaded" : "Not loaded";
+      $("kpiAlertsSub").textContent = state.alerts ? "Attention required" : "All quiet";
+    }
+
+    function runDemo(){
+      if(state.locked){
+        logLine("ERR", "Action blocked: cockpit is locked.");
+        addActivity("Blocked", "Lock mode active", "LOCK", "warn");
+        return;
+      }
+
+      setSystem("running");
+      logLine("CY", "Demo sequence initiated…");
+      addActivity("Demo", "Sequence started", "RUN", "good");
+
+      // Simulated stages
+      setTimeout(() => {
+        $("stLead").textContent = "Collecting";
+        setBadge("bdLead", "RUN", "good");
+        logLine("OK", "Lead Engine: collecting sources (mock).");
+      }, 300);
+
+      setTimeout(() => {
+        $("stDedupe").textContent = "Processing";
+        setBadge("bdDedupe", "RUN", "good");
+        logLine("OK", "Dedupe: checking duplicates (mock).");
+      }, 650);
+
+      setTimeout(() => {
+        $("stIntel").textContent = "Scanning";
+        setBadge("bdIntel", "RUN", "good");
+        logLine("OK", "Intel Layer: scanning signals (mock).");
+      }, 950);
+
+      setTimeout(() => {
+        $("stOutreach").textContent = "Queued";
+        setBadge("bdOutreach", "RUN", "good");
+        logLine("OK", "Outreach: queue prepared (mock).");
+      }, 1250);
+
+      setTimeout(() => {
+        // Update metrics
+        state.demoRan = true;
+        state.leads = 18;
+        state.deals = 3;
+        state.pipeline = 2450000;
+        state.alerts = 1;
+        updateKPIs();
+
+        addActivity("KPIs", "Updated metrics loaded", "OK", "good");
+        logLine("OK", "KPIs updated: Leads=18, Deals=3, Pipeline=2,450,000, Alerts=1.");
+
+        // Reset to standby but keep OK badges
+        $("stLead").textContent = "Ready";
+        $("stDedupe").textContent = "Ready";
+        $("stIntel").textContent = "Ready";
+        $("stOutreach").textContent = "Ready";
+
+        setBadge("bdLead", "OK", "good");
+        setBadge("bdDedupe", "OK", "good");
+        setBadge("bdIntel", "OK", "good");
+        setBadge("bdOutreach", "OK", "good");
+
+        setSystem("standby");
+        logLine("CY", "Demo sequence completed.");
+        addActivity("Demo", "Sequence completed", "DONE", "good");
+      }, 1650);
+    }
+
+    function clearConsole(){
+      $("console").innerHTML = "";
+      logLine("CY", "Console cleared.");
+      addActivity("Console", "Cleared output", "OK", "good");
+    }
+
+    function syncSnapshot(){
+      if(state.locked){
+        logLine("ERR", "Sync blocked: cockpit is locked.");
+        addActivity("Blocked", "Lock mode active", "LOCK", "warn");
+        return;
+      }
+      logLine("CY", "Sync Snapshot: storing current state (mock).");
+      addActivity("Snapshot", "State synced (mock)", "OK", "good");
+    }
+
+    function scanSignals(){
+      if(state.locked){
+        logLine("ERR", "Scan blocked: cockpit is locked.");
+        addActivity("Blocked", "Lock mode active", "LOCK", "warn");
+        return;
+      }
+      logLine("CY", "Signal Scan: running quick scan (mock).");
+      addActivity("Scan", "Signals scanned (mock)", "OK", "good");
+      if(!state.demoRan){
+        state.alerts = 0;
+        updateKPIs();
+      } else {
+        logLine("OK", "Scan result: 1 alert remains in queue (mock).");
+      }
+    }
+
+    function toggleLock(){
+      state.locked = !state.locked;
+      if(state.locked){
+        setSystem("locked");
+        logLine("CY", "Lock Mode enabled. Critical actions are blocked.");
+        addActivity("Security", "Lock Mode enabled", "LOCK", "warn");
+      } else {
+        setSystem("standby");
+        logLine("CY", "Lock Mode disabled.");
+        addActivity("Security", "Lock Mode disabled", "OK", "good");
+      }
+    }
+
+    function setView(v){
+      state.view = v;
+      $("viewTag").textContent = v;
+      document.querySelectorAll(".nav .item").forEach(x => {
+        x.classList.toggle("active", x.dataset.view === v);
+      });
+      logLine("CY", `View changed: ${v}`);
+      addActivity("View", `Switched to ${v}`, "OK", "good");
+    }
+
+    // Bind
+    $("btnDemo").addEventListener("click", runDemo);
+    $("btnClear").addEventListener("click", clearConsole);
+
+    $("cmdRun").addEventListener("click", runDemo);
+    $("cmdSync").addEventListener("click", syncSnapshot);
+    $("cmdScan").addEventListener("click", scanSignals);
+    $("cmdLock").addEventListener("click", toggleLock);
+
+    document.querySelectorAll(".nav .item").forEach(item => {
+      item.addEventListener("click", () => setView(item.dataset.view));
+    });
+
+    // Clock
+    function tick(){
+      $("timeNow").textContent = ts();
+      requestAnimationFrame(() => {}); // no-op (keeps UI responsive)
+    }
+    setInterval(tick, 1000);
+    tick();
+
+    // Boot
+    setSystem("standby");
+    logLine("CY", "CEC Warroom V1 booted. Executive Cockpit ready.");
+    logLine("OK", "Netlify status: online.");
+    updateKPIs();
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CEC Warroom V1 — Executive Cockpit</title>
+
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#111827;
+      --panel2:#0f172a;
+      --gold:#d6b15e;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --ok:#22c55e;
+      --wait:#f59e0b;
+      --bad:#ef4444;
+      --line:rgba(255,255,255,.08);
+      --radius:14px;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 900px at 20% 10%, rgba(214,177,94,.12), transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(99,102,241,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      letter-spacing:.2px;
+    }
+
+    .wrap{padding:26px; max-width:1100px; margin:0 auto;}
+    .topbar{
+      display:flex; align-items:center; gap:14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding:14px 16px;
+      box-shadow: var(--shadow);
+    }
+    .logo{
+      width:38px; height:38px; border-radius:10px;
+      background: linear-gradient(180deg, rgba(214,177,94,.9), rgba(214,177,94,.35));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; color:#0b0f14;
+    }
+    .titleblock{flex:1}
+    .titleblock h1{margin:0; font-size:18px; color:var(--gold)}
+    .titleblock .sub{margin-top:2px; font-size:12px; color:var(--muted)}
+    .pill{
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+    }
+    .pill.live{color:#cbd5e1}
+    .grid{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:16px;
+    }
+    @media (max-width: 900px){
+      .grid{grid-template-columns:1fr;}
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding:16px;
+      box-shadow: var(--shadow);
+    }
+    .card h2{
+      margin:0 0 10px 0;
+      font-size:14px;
+      letter-spacing:.6px;
+      text-transform:uppercase;
+      color:#cbd5e1;
+    }
+
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .btn{
+      padding:10px 12px;
+      border:0;
+      border-radius:10px;
+      cursor:pointer;
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border:1px solid var(--line);
+    }
+    .btn.primary{
+      background: rgba(214,177,94,.95);
+      color:#0b0f14;
+      font-weight:700;
+      border:0;
+    }
+    .btn.small{padding:8px 10px; font-size:12px}
+    .btn:active{transform: translateY(1px)}
+    .input, textarea{
+      width:100%;
+      background: rgba(15, 23, 42, .65);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      color:var(--text);
+      outline:none;
+    }
+    textarea{min-height:120px; resize:vertical}
+
+    .kpis{display:grid; grid-template-columns:repeat(2, 1fr); gap:12px}
+    @media (max-width: 520px){ .kpis{grid-template-columns:1fr;} }
+    .kpi{
+      background: rgba(0,0,0,.22);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+    }
+    .kpi .label{color:var(--muted); font-size:12px}
+    .kpi .val{font-size:26px; margin-top:6px; font-weight:800}
+    .kpi .note{margin-top:6px; font-size:12px; color:var(--muted); display:flex; gap:8px; align-items:center}
+    .dot{width:8px; height:8px; border-radius:99px; background: rgba(214,177,94,.9)}
+    .dot.ok{background: var(--ok)}
+    .dot.wait{background: var(--wait)}
+    .dot.bad{background: var(--bad)}
+
+    .statusline{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:10px 12px; border-radius:12px;
+      background: rgba(0,0,0,.20);
+      border:1px solid var(--line);
+      margin-top:10px;
+      font-size:13px;
+    }
+    .tag{
+      font-size:12px; padding:4px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      color:#cbd5e1;
+      background: rgba(255,255,255,.03);
+    }
+    .tag.ok{border-color:rgba(34,197,94,.35); color:#bbf7d0}
+    .tag.wait{border-color:rgba(245,158,11,.35); color:#fde68a}
+    .tag.bad{border-color:rgba(239,68,68,.35); color:#fecaca}
+
+    .console{
+      margin-top:10px;
+      background: rgba(0,0,0,.28);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      height:220px;
+      overflow:auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:12px;
+      line-height:1.45;
+      color:#d1d5db;
+    }
+    .line{margin:0 0 6px 0}
+    .line .t{color:var(--muted)}
+    .line .k{color:var(--gold)}
+    .line .ok{color:var(--ok)}
+    .line .w{color:var(--wait)}
+    .line .b{color:var(--bad)}
+
+    .footerbar{
+      margin-top:16px;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      font-size:12px;
+    }
+    .footerbar .right{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="logo">CEC</div>
+      <div class="titleblock">
+        <h1>CEC Warroom</h1>
+        <div class="sub">Executive Cockpit · V1.1 · Intelligence Active</div>
+      </div>
+      <div class="pill live">LIVE</div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT: Intelligence -->
+      <div class="card">
+        <h2>Intelligence Console</h2>
+
+        <div class="row">
+          <button class="btn primary" id="btnSnapshot">Snapshot</button>
+          <button class="btn" id="btnInject">Inject Data</button>
+          <button class="btn" id="btnClear">Clear Console</button>
+          <span class="pill" id="timeNow">--:--:--</span>
+        </div>
+
+        <div style="margin-top:12px;">
+          <label style="display:block; color:var(--muted); font-size:12px; margin-bottom:6px;">
+            Data Inject (plak hier je leads / notities / CSV regels)
+          </label>
+          <textarea id="injectBox" class="input" placeholder="Voorbeeld:
+John Doe | CEO | Dubai | john@company.com
+LinkedIn: https://...
+Notities: ..."></textarea>
+
+          <div class="row" style="margin-top:10px;">
+            <button class="btn small primary" id="btnParse">Parse → Intelligence Log</button>
+            <button class="btn small" id="btnSaveLocal">Save Local Snapshot</button>
+            <button class="btn small" id="btnLoadLocal">Load Local Snapshot</button>
+          </div>
+        </div>
+
+        <div class="console" id="console"></div>
+      </div>
+
+      <!-- RIGHT: KPI + Status -->
+      <div>
+        <div class="card">
+          <h2>KPIs</h2>
+          <div class="kpis">
+            <div class="kpi">
+              <div class="label">Leads (24h)</div>
+              <div class="val" id="kLeads">0</div>
+              <div class="note"><span class="dot" id="dLeads"></span><span id="nLeads">No activity</span></div>
+            </div>
+            <div class="kpi">
+              <div class="label">Deals (Active)</div>
+              <div class="val" id="kDeals">0</div>
+              <div class="note"><span class="dot wait"></span><span>Awaiting input</span></div>
+            </div>
+          </div>
+
+          <h2 style="margin-top:14px;">Status</h2>
+          <div class="statusline">
+            <div><strong>System</strong> <span style="color:var(--muted); margin-left:8px;" id="sSystem">Standby</span></div>
+            <span class="tag wait" id="tSystem">WAIT</span>
+          </div>
+          <div class="statusline">
+            <div><strong>Netlify</strong> <span style="color:var(--muted); margin-left:8px;" id="sNetlify">Online</span></div>
+            <span class="tag ok" id="tNetlify">OK</span>
+          </div>
+
+          <div class="row" style="margin-top:12px;">
+            <button class="btn" id="btnToggle">Toggle Active</button>
+            <button class="btn" id="btnLock">Lock</button>
+          </div>
+        </div>
+
+        <div class="footerbar">
+          <div>CEC Warroom V1.1 — Internal Intelligence · Dark/Gold · Mobile-ready</div>
+          <div class="right">
+            <span class="pill" id="mode">Mode: Executive</span>
+            <span class="pill" id="lockState">lock: off</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ----- State -----
+    const state = {
+      system: "standby",
+      locked: false,
+      leads24h: 0,
+      dealsActive: 0,
+      lastSnapshotTs: null
+    };
+
+    // ----- Helpers -----
+    const $ = (id) => document.getElementById(id);
+
+    function ts(){
+      const d = new Date();
+      return d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+    }
+
+    function logLine(kind, msg){
+      const el = $("console");
+      const p = document.createElement("div");
+      p.className = "line";
+      p.innerHTML = `<span class="t">${ts()}</span> <span class="k">[${kind}]</span> ${msg}`;
+      el.appendChild(p);
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function setSystem(mode){
+      state.system = mode;
+      $("sSystem").textContent = mode === "active" ? "Active" : "Standby";
+      $("tSystem").textContent = mode === "active" ? "OK" : "WAIT";
+      $("tSystem").className = "tag " + (mode === "active" ? "ok" : "wait");
+    }
+
+    function setLocked(v){
+      state.locked = v;
+      $("lockState").textContent = "lock: " + (v ? "on" : "off");
+      $("btnParse").disabled = v;
+      $("btnInject").disabled = v;
+      $("btnSnapshot").disabled = v;
+      $("injectBox").disabled = v;
+      logLine(v ? "LOCK" : "UNLOCK", v ? "<span class='w'>Console locked.</span>" : "<span class='ok'>Console unlocked.</span>");
+    }
+
+    function updateKPIs(){
+      $("kLeads").textContent = state.leads24h;
+      $("kDeals").textContent = state.dealsActive;
+
+      if(state.leads24h > 0){
+        $("dLeads").className = "dot ok";
+        $("nLeads").textContent = "Activity detected";
+      } else {
+        $("dLeads").className = "dot";
+        $("nLeads").textContent = "No activity";
+      }
+    }
+
+    // ----- Actions -----
+    function snapshot(){
+      state.lastSnapshotTs = Date.now();
+      logLine("SNAPSHOT", "<span class='ok'>Snapshot captured.</span>");
+      logLine("OK", "System health nominal. Intelligence layer ready.");
+    }
+
+    function inject(){
+      const txt = $("injectBox").value.trim();
+      if(!txt){
+        logLine("WARN", "<span class='w'>No data provided. Paste data in the inject box first.</span>");
+        return;
+      }
+      logLine("INJECT", `Received <span class='ok'>${txt.length}</span> characters for processing.`);
+    }
+
+    function parseToLog(){
+      const txt = $("injectBox").value.trim();
+      if(!txt){
+        logLine("WARN", "<span class='w'>Nothing to parse.</span>");
+        return;
+      }
+
+      // Simple parsing: count non-empty lines as "leads"
+      const lines = txt.split("\n").map(x => x.trim()).filter(Boolean);
+      state.leads24h += lines.length;
+
+      logLine("PARSE", `Parsed <span class='ok'>${lines.length}</span> line(s).`);
+      lines.slice(0, 30).forEach((l, i) => {
+        logLine("INTEL", `${i+1}. ${escapeHtml(l)}`);
+      });
+      if(lines.length > 30){
+        logLine("INTEL", `<span class='w'>Showing first 30 lines only.</span>`);
+      }
+
+      updateKPIs();
+    }
+
+    function clearConsole(){
+      $("console").innerHTML = "";
+      logLine("OK", "Console cleared.");
+    }
+
+    function saveLocal(){
+      const payload = {
+        state,
+        inject: $("injectBox").value || "",
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem("CEC_WARROOM_SNAPSHOT", JSON.stringify(payload));
+      logLine("SAVE", "<span class='ok'>Saved local snapshot.</span>");
+    }
+
+    function loadLocal(){
+      const raw = localStorage.getItem("CEC_WARROOM_SNAPSHOT");
+      if(!raw){
+        logLine("WARN", "<span class='w'>No local snapshot found yet.</span>");
+        return;
+      }
+      const payload = JSON.parse(raw);
+      if(payload.inject != null) $("injectBox").value = payload.inject;
+      if(payload.state){
+        Object.assign(state, payload.state);
+        setSystem(state.system);
+        setLocked(!!state.locked);
+        updateKPIs();
+      }
+      logLine("LOAD", "<span class='ok'>Loaded local snapshot.</span>");
+    }
+
+    function toggleActive(){
+      setSystem(state.system === "active" ? "standby" : "active");
+      logLine("SYS", `Mode switched to <span class='ok'>${state.system}</span>.`);
+    }
+
+    function toggleLock(){
+      setLocked(!state.locked);
+    }
+
+    function escapeHtml(str){
+      return str
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;");
+    }
+
+    // ----- Bind -----
+    $("btnSnapshot").addEventListener("click", snapshot);
+    $("btnInject").addEventListener("click", inject);
+    $("btnParse").addEventListener("click", parseToLog);
+    $("btnClear").addEventListener("click", clearConsole);
+    $("btnSaveLocal").addEventListener("click", saveLocal);
+    $("btnLoadLocal").addEventListener("click", loadLocal);
+    $("btnToggle").addEventListener("click", toggleActive);
+    $("btnLock").addEventListener("click", toggleLock);
+
+    // ----- Clock -----
+    function tick(){
+      $("timeNow").textContent = ts();
+    }
+    setInterval(tick, 1000);
+    tick();
+
+    // ----- Boot -----
+    setSystem("standby");
+    logLine("CY", "CEC Warroom V1.1 booted. Intelligence ready.");
+    logLine("OK", "Netlify status: online.");
+    updateKPIs();
+  </script>
+</body>
+</html>
