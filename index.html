@@ -1272,5 +1272,5 @@ async function loadInvestors(){
     document.getElementById("investor-count").innerText = data.length;
   }
 }
-loadInvestors();
+window.addEventListener("DOMContentLoaded", loadInvestors);
 </script>
