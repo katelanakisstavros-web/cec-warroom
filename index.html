@@ -1261,13 +1261,16 @@ const SUPABASE_ANON_KEY = "sb_publishable_ZDPWH9W8MWmyXPazOjReMQ_GurzXAy6";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+
+
 async function loadInvestors(){
   const { data, error } = await sb.from("investor").select("*");
 
   console.log("INVESTORS:", data);
-}
 
+  if(data){
+    document.getElementById("investor-count").innerText = data.length;
+  }
+}
 loadInvestors();
 </script>
-
-
